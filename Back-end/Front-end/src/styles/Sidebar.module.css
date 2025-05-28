@@ -1,0 +1,278 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #1e293b;
+  color: white;
+  z-index: 50;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarCollapsed {
+  width: 4rem;
+  transform: translateX(-100%);
+}
+
+.sidebarExpanded {
+  width: 20rem;
+  transform: translateX(0);
+}
+
+@media (min-width: 768px) {
+  .sidebarCollapsed {
+    width: 4rem;
+    transform: translateX(0);
+  }
+  
+  .sidebarExpanded {
+    width: 16rem;
+  }
+  
+  .overlay {
+    display: none;
+  }
+}
+
+.header {
+  padding: 1rem;
+  border-bottom: 1px solid #475569;
+  background-color: #0f172a;
+  flex-shrink: 0;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoIcon {
+  width: 2rem;
+  height: 2rem;
+  background-color: #2563eb;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoText span {
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.logoTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.logoSubtitle {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.toggleButton {
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.toggleButton:hover {
+  background-color: #475569;
+}
+
+.nav {
+  flex: 1;
+  padding: 1rem 0;
+  overflow-y: auto;
+}
+
+.navList {
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.navItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+}
+
+.navItem:hover {
+  background-color: #475569;
+  color: white;
+}
+
+.navItemActive {
+  background-color: #2563eb;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.navIcon {
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+
+.navItemActive .navIcon {
+  color: white;
+}
+
+.navItem:hover .navIcon {
+  color: white;
+}
+
+.navLabel {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.activeIndicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.25rem;
+  height: 2rem;
+  background-color: #60a5fa;
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.footer {
+  border-top: 1px solid #475569;
+  padding: 1rem;
+  background-color: #0f172a;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.userContent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userAvatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(to bottom right, #3b82f6, #8b5cf6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userAvatarText {
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.userDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: capitalize;
+}
+
+.logoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.logoutButton:hover {
+  background-color: #dc2626;
+}
+
+.logoutIcon {
+  color: #94a3b8;
+}
+
+.logoutButton:hover .logoutIcon {
+  color: white;
+}
+
+.logoutText {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+.logoutButton:hover .logoutText {
+  color: white;
+}
+
+.hiddenOnMobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hiddenOnMobile {
+    display: block;
+  }
+  
+  .visibleOnMobile {
+    display: none;
+  }
+} 
