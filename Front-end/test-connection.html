@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Conexión Backend - Sistema RAEE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test de Conexión Frontend ↔ Backend</h1>
+        <p>Esta página prueba la conexión entre el frontend y el backend del Sistema RAEE.</p>
+
+        <div class="test-section">
+            <h3>1. Estado del Backend</h3>
+            <button onclick="testBackendHealth()">Verificar Backend</button>
+            <div id="backend-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Test de Login</h3>
+            <button onclick="testLogin('admin', 'admin123')">Login Admin</button>
+            <button onclick="testLogin('usuario', 'user123')">Login Usuario</button>
+            <button onclick="testLogin('invitado', 'guest123')">Login Invitado</button>
+            <div id="login-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Test de Usuarios de Prueba</h3>
+            <button onclick="getTestUsers()">Obtener Usuarios</button>
+            <div id="users-status"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Logs de Prueba</h3>
+            <button onclick="clearLogs()">Limpiar Logs</button>
+            <pre id="logs"></pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let logs = [];
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logs.push(`[${timestamp}] ${message}`);
+            document.getElementById('logs').textContent = logs.join('\n');
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logs').textContent = '';
+        }
+
+        function showStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        async function testBackendHealth() {
+            log('🔍 Verificando estado del backend...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('✅ Backend conectado correctamente');
+                    showStatus('backend-status', 
+                        `✅ Backend Online<br>
+                        Servicio: ${data.service}<br>
+                        Estado: ${data.status}<br>
+                        Versión: ${data.version}<br>
+                        Timestamp: ${data.timestamp}`, 'success');
+                } else {
+                    log('❌ Backend respondió con error');
+                    showStatus('backend-status', '❌ Backend respondió con error', 'error');
+                }
+            } catch (error) {
+                log(`💥 Error de conexión: ${error.message}`);
+                showStatus('backend-status', 
+                    `❌ Backend Desconectado<br>
+                    Error: ${error.message}<br>
+                    Solución: Ejecutar "node start-server.js" en la carpeta Back-end`, 'error');
+            }
+        }
+
+        async function testLogin(username, password) {
+            log(`🔐 Probando login: ${username}`);
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    log(`✅ Login exitoso para ${username} (${data.user.role})`);
+                    showStatus('login-status', 
+                        `✅ Login Exitoso: ${username}<br>
+                        Usuario: ${data.user.fullName}<br>
+                        Rol: ${data.user.role}<br>
+                        Permisos: ${data.user.permissions.join(', ')}<br>
+                        Token: ${data.token ? 'Generado' : 'No generado'}`, 'success');
+                } else {
+                    log(`❌ Login fallido para ${username}: ${data.error}`);
+                    showStatus('login-status', 
+                        `❌ Login Fallido: ${username}<br>
+                        Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`💥 Error en login ${username}: ${error.message}`);
+                showStatus('login-status', 
+                    `❌ Error de Conexión<br>
+                    Usuario: ${username}<br>
+                    Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function getTestUsers() {
+            log('👥 Obteniendo usuarios de prueba...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/test-users`);
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    log(`✅ Usuarios obtenidos: ${data.testUsers.length}`);
+                    const usersList = data.testUsers.map(user => 
+                        `• ${user.username} (${user.role}) - ${user.fullName}`
+                    ).join('<br>');
+                    
+                    showStatus('users-status', 
+                        `✅ Usuarios de Prueba Disponibles:<br>
+                        ${usersList}`, 'success');
+                } else {
+                    log('❌ Error al obtener usuarios');
+                    showStatus('users-status', '❌ Error al obtener usuarios', 'error');
+                }
+            } catch (error) {
+                log(`💥 Error al obtener usuarios: ${error.message}`);
+                showStatus('users-status', 
+                    `❌ Error de Conexión<br>
+                    Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Ejecutar test inicial al cargar la página
+        window.onload = function() {
+            log('🚀 Iniciando tests de conexión...');
+            testBackendHealth();
+        };
+    </script>
+</body>
+</html> 
